@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SCARY INTELLIGENCE — OSINT Dashboard</title>
+<style>
+:root{--bg:#080b12;--panel:#0e131d;--panel2:#111824;--line:#202a39;--muted:#8490a2;--text:#e8edf6;--blue:#4d7df0;--green:#39c985;--red:#e45c67;--yellow:#e6b94f;--purple:#a47af5}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font:14px Inter,system-ui,-apple-system,Segoe UI,sans-serif}
+.app{display:flex;min-height:100vh}.sidebar{width:228px;background:#0a0e16;border-right:1px solid var(--line);padding:18px 12px;display:flex;flex-direction:column;flex-shrink:0}
+.brand{display:flex;align-items:center;gap:10px;padding:4px 8px 28px}.brandmark{width:34px;height:34px;border-radius:9px;background:#18366e;color:#8db1ff;display:grid;place-items:center;font-size:18px}.brand b{display:block;font-size:14px}.brand small{color:var(--muted);font-size:10px}
+.navlabel{font-size:10px;text-transform:uppercase;letter-spacing:1.4px;color:#657185;padding:8px 10px 10px}.nav{display:grid;gap:5px}.nav button{border:0;background:transparent;color:#aab4c3;padding:11px 10px;border-radius:7px;text-align:left;display:flex;align-items:center;gap:10px;font-size:12px;cursor:pointer}.nav button:hover{background:#141c2a;color:white}.nav button.active{background:var(--blue);color:white;box-shadow:0 4px 14px #315fc544}.ico{width:16px;text-align:center;font-size:14px}.profile{margin-top:auto;border-top:1px solid var(--line);padding:16px 6px 2px;display:flex;gap:9px;align-items:center;font-size:11px}.avatar{width:27px;height:27px;border-radius:50%;background:#203b70;display:grid;place-items:center;color:#9bbaff}.profile small{display:block;color:var(--muted);font-size:9px;margin-top:2px}
+.main{min-width:0;flex:1}.topbar{height:64px;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;padding:0 24px;gap:16px}.heading h1{font-size:17px;margin:0 0 4px}.heading p{margin:0;color:var(--muted);font-size:10px}.topright{display:flex;align-items:center;gap:9px}.search{width:min(280px,30vw);background:#0c111a;border:1px solid var(--line);border-radius:6px;padding:9px 11px;color:#aab4c3;font-size:10px}.pill{border:1px solid var(--line);border-radius:20px;padding:6px 9px;font-size:9px;color:#b7c1d0;white-space:nowrap}.dot{display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--green);margin-right:5px}
+.content{padding:20px 24px 30px;max-width:1500px;margin:auto}.page{display:none}.page.active{display:block}.stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:13px;margin-bottom:14px}.stat,.panel{background:var(--panel);border:1px solid var(--line);border-radius:7px}.stat{padding:15px 14px;min-height:90px;position:relative}.stat .label{font-size:10px;color:var(--muted)}.stat strong{display:block;font-size:20px;margin:6px 0 2px}.stat small{font-size:9px;color:var(--muted)}.staticon{position:absolute;right:13px;top:27px;width:24px;height:24px;border-radius:6px;background:#182744;color:#79a2ff;display:grid;place-items:center}
+.columns{display:grid;grid-template-columns:minmax(0,1.65fr) minmax(230px,.8fr);gap:14px}.panel{padding:15px}.panelhead{display:flex;align-items:center;justify-content:space-between;margin-bottom:5px}.panel h2{font-size:14px;margin:0}.sub{font-size:9px;color:var(--muted);margin:4px 0 14px}.activity{display:grid;gap:7px}.activityrow{background:#111824;border:1px solid #192333;border-radius:6px;padding:11px;display:flex;align-items:center;gap:10px}.activityicon{width:23px;height:23px;border-radius:6px;display:grid;place-items:center;background:#13271f;color:var(--green)}.activityicon.warn{background:#2b1b20;color:var(--red)}.activityicon.info{background:#17223a;color:#77a5ff}.activitytext{min-width:0;flex:1;font-size:10px}.activitytext small{display:block;color:var(--muted);font-size:9px;margin-top:3px}.time{font-size:8px;color:var(--muted);white-space:nowrap}.source{display:flex;align-items:center;justify-content:space-between;padding:11px 9px;border:1px solid #1c2635;border-radius:6px;margin-top:7px;font-size:10px}.status{font-size:8px;border-radius:12px;padding:4px 7px;background:#1a2635;color:#aebbd0}.status.online{background:#173326;color:#75d5a4}.status.offline{background:#42232a;color:#ff9aa2}.btn{background:#0a0f18;border:1px solid var(--line);color:#c8d2e1;padding:9px 12px;border-radius:5px;font-size:10px;cursor:pointer;width:100%;margin-top:10px}.btn:hover{border-color:#527ce0;color:white}.sectiongrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:13px}.tile{padding:16px;background:var(--panel);border:1px solid var(--line);border-radius:7px}.tile h3{font-size:13px;margin:0 0 7px}.tile p{color:var(--muted);font-size:10px;line-height:1.6;margin:0 0 12px}.field{display:grid;gap:6px;margin:12px 0}.field label{font-size:10px;color:#aab4c3}.field input,.field select,.field textarea{width:100%;background:#090e17;border:1px solid var(--line);border-radius:5px;padding:10px;color:var(--text);outline:none;font-size:11px}.notice{font-size:10px;line-height:1.6;color:#a9b5c7;background:#111a28;border:1px solid #26354a;border-radius:6px;padding:11px;margin-top:12px}.muted{color:var(--muted)}.mobilemenu{display:none}
+@media(max-width:800px){.sidebar{width:185px}.content{padding:16px}.topbar{padding:0 16px}.stats{grid-template-columns:repeat(2,minmax(0,1fr))}.columns{grid-template-columns:1fr}}
+@media(max-width:560px){.app{display:block}.sidebar{width:100%;height:auto;padding:10px;border-right:0;border-bottom:1px solid var(--line)}.brand{padding:3px 6px 10px}.navlabel,.profile{display:none}.nav{display:flex;overflow-x:auto;gap:5px}.nav button{white-space:nowrap;padding:9px 10px;font-size:10px}.main{width:100%}.topbar{height:auto;min-height:62px;padding:12px;align-items:flex-start}.heading h1{font-size:14px}.heading p{max-width:170px;line-height:1.4}.search{display:none}.topright{gap:5px}.pill{font-size:8px;padding:5px 7px}.content{padding:13px}.stats{gap:8px}.stat{padding:12px;min-height:82px}.stat strong{font-size:18px}.columns,.sectiongrid{grid-template-columns:1fr}.panel{padding:12px}}
+</style>
+</head>
+<body>
+<div class="app">
+<aside class="sidebar">
+  <div class="brand"><div class="brandmark">⬡</div><div><b>SCARY INTELLIGENCE</b><small>OSINT Command Center</small></div></div>
+  <div class="navlabel">Workspace</div>
+  <nav class="nav">
+    <button class="active" data-page="dashboard"><span class="ico">⌂</span>Dashboard</button>
+    <button data-page="investigations"><span class="ico">▱</span>Investigations</button>
+    <button data-page="framework"><span class="ico">⌕</span>OSINT Framework</button>
+    <button data-page="graph"><span class="ico">♧</span>Maltego Graph</button>
+    <button data-page="spiderfoot"><span class="ico">◉</span>SpiderFoot</button>
+    <button data-page="sources"><span class="ico">▤</span>Data Sources</button>
+    <button data-page="discord"><span class="ico">◉</span>Discord ID</button>
+    <button data-page="profile"><span class="ico">▣</span>Personal Info</button>
+    <button data-page="reports"><span class="ico">▧</span>Reports</button>
+    <button data-page="settings"><span class="ico">⚙</span>Settings</button>
+  </nav>
+  <div class="profile"><div class="avatar">S</div><div>Analyst Dashboard<small>● Active Session</small></div></div>
+</aside>
+<main class="main">
+<header class="topbar"><div class="heading"><h1 id="pageTitle">Dashboard Overview</h1><p id="pageDesc">Real-time intelligence gathering status and analytics</p></div><div class="topright"><input class="search" placeholder="⌕  Search entities, public profiles..."><span class="pill"><i class="dot"></i>Online</span><span class="pill">3 Active Scans</span><span class="pill">♧</span></div></header>
+<div class="content">
+<section class="page active" id="dashboard">
+ <div class="stats">
+  <div class="stat"><span class="label">Active Investigations</span><strong>12</strong><small>+3 this week</small><span class="staticon">◎</span></div>
+  <div class="stat"><span class="label">Data Sources</span><strong>47</strong><small>8 online</small><span class="staticon" style="color:var(--green)">▤</span></div>
+  <div class="stat"><span class="label">Entities Mapped</span><strong>1,284</strong><small>+156 today</small><span class="staticon" style="color:var(--purple)">♧</span></div>
+  <div class="stat"><span class="label">Threat Score</span><strong>7.2/10</strong><small>High Risk · demo</small><span class="staticon" style="color:var(--red)">⬡</span></div>
+ </div>
+ <div class="columns">
+  <div class="panel"><div class="panelhead"><h2>⌁ Recent Activity</h2></div><p class="sub">Latest events from your OSINT workspace</p>
+   <div class="activity">
+    <div class="activityrow"><span class="activityicon">✓</span><div class="activitytext">Public source check completed<small>Target: example.org · demo data</small></div><span class="time">2 minutes ago</span></div>
+    <div class="activityrow"><span class="activityicon info">⌁</span><div class="activitytext">New public profile saved<small>Source: GitHub · demo data</small></div><span class="time">15 minutes ago</span></div>
+    <div class="activityrow"><span class="activityicon warn">△</span><div class="activitytext">Domain mention flagged<small>Target: example.net · demo data</small></div><span class="time">1 hour ago</span></div>
+    <div class="activityrow"><span class="activityicon" style="color:var(--yellow);background:#302a18">◷</span><div class="activitytext">Investigation updated<small>Case: OSINT-2024-003</small></div><span class="time">3 hours ago</span></div>
+   </div><button class="btn" data-go="investigations">View All Activity</button>
+  </div>
+  <div class="panel"><div class="panelhead"><h2>◉ Data Sources</h2></div><p class="sub">Status of connected public data sources</p>
+   <div class="source"><span><i class="dot"></i>VirusTotal</span><span class="status online">online</span></div>
+   <div class="source"><span><i class="dot"></i>Shodan</span><span class="status online">online</span></div>
+   <div class="source"><span><i class="dot"></i>WhoisXML</span><span class="status online">online</span></div>
+   <div class="source"><span><i class="dot" style="background:var(--red)"></i>ThreatCrowd</span><span class="status offline">offline</span></div>
+   <div class="source"><span><i class="dot"></i>AlienVault OTX</span><span class="status online">online</span></div>
+   <button class="btn" data-go="sources">Manage Sources</button>
+  </div>
+ </div>
+</section>
+<section class="page" id="investigations"><div class="panel"><h2>Investigations</h2><p class="sub">Organise tes recherches à partir de sources publiques et autorisées.</p><div class="sectiongrid"><div class="tile"><h3>OSINT-001 · Public profile review</h3><p>Exemple de dossier — liens publics et notes.</p><span class="status online">In progress</span></div><div class="tile"><h3>OSINT-002 · Domain overview</h3><p>Exemple de dossier — informations publiées sur un domaine.</p><span class="status">Draft</span></div></div><button class="btn" onclick="alert('Démo : création de dossier non connectée.')">+ New Investigation</button></div></section>
+<section class="page" id="framework"><div class="panel"><h2>OSINT Framework</h2><p class="sub">Outils et catégories pour explorer des informations accessibles publiquement.</p><div class="sectiongrid"><div class="tile"><h3>Social networks</h3><p>Consulter uniquement les profils publics et les informations publiées volontairement.</p></div><div class="tile"><h3>Web & domains</h3><p>Documentation publique, DNS et informations de domaines autorisés.</p></div><div class="tile"><h3>Code platforms</h3><p>Explorer les dépôts et profils publics, comme GitHub.</p></div><div class="tile"><h3>Threat intelligence</h3><p>Consulter des rapports publics sur les menaces et vulnérabilités.</p></div></div></div></section>
+<section class="page" id="graph"><div class="panel"><h2>Maltego Graph</h2><p class="sub">Vue de démonstration des relations entre éléments publics.</p><div style="min-height:250px;display:grid;place-items:center;background:#090e17;border:1px dashed #2b3a50;border-radius:7px"><div style="text-align:center"><div style="font-size:34px;color:var(--blue)">◎ ─── ◇ ─── ◎</div><p class="muted">Graph preview · données fictives</p></div></div></div></section>
+<section class="page" id="spiderfoot"><div class="panel"><h2>SpiderFoot</h2><p class="sub">Espace de suivi de vérifications autorisées — aperçu visuel uniquement.</p><div class="field"><label>Nom du projet</label><input placeholder="Ex. audit de mon propre domaine"></div><div class="field"><label>Domaine ou profil public que tu es autorisé à vérifier</label><input placeholder="example.com"></div><button class="btn" onclick="alert('Interface de démonstration : aucun scan réel ne sera lancé.')">Prepare scan</button><div class="notice">Cette maquette ne lance aucun scan. N'effectue des vérifications que sur tes propres comptes, systèmes ou données pour lesquels tu as une autorisation.</div></div></section>
+<section class="page" id="sources"><div class="panel"><h2>Data Sources</h2><p class="sub">Exemples de sources publiques — état illustratif, non connecté.</p><div class="source"><span>VirusTotal</span><span class="status online">online · demo</span></div><div class="source"><span>Shodan</span><span class="status online">online · demo</span></div><div class="source"><span>WhoisXML</span><span class="status online">online · demo</span></div><div class="source"><span>AlienVault OTX</span><span class="status online">online · demo</span></div><div class="notice">Les statuts affichés sont fictifs. Connecte uniquement des API officielles et conserve les clés côté serveur.</div></div></section>
+<section class="page" id="discord"><div class="panel"><h2>Discord ID Lookup</h2><p class="sub">Vérifie le format d'un identifiant Discord et ouvre le profil public correspondant.</p><div class="tile"><div class="field"><label>Discord User ID</label><input id="discordId" inputmode="numeric" placeholder="Ex. 123456789012345678"></div><button class="btn" id="checkDiscord">Vérifier l'ID</button><div id="discordResult" class="notice" aria-live="polite">Entre un identifiant Discord pour vérifier son format.</div><button class="btn" id="openDiscord" disabled>Ouvrir le profil Discord</button></div><div class="notice">Limite importante : l'API officielle Discord ne donne pas l'adresse IP d'un utilisateur à partir de son ID. Cette page ne cherche pas à identifier ou localiser quelqu'un. N'entre pas de token Discord personnel ici.</div></div></section>
+<section class="page" id="profile"><div class="panel"><h2>Personal Information</h2><p class="sub">Fiche locale pour tes propres informations — aucun envoi au serveur.</p>
+<div class="sectiongrid">
+  <div class="tile">
+    <h3>Identity</h3>
+    <div class="field"><label>Nom</label><input id="personalLastName" autocomplete="off" placeholder="Ton nom"></div>
+    <div class="field"><label>Prénom</label><input id="personalFirstName" autocomplete="off" placeholder="Ton prénom"></div>
+    <div class="field"><label>Ville</label><input id="personalCity" autocomplete="off" placeholder="Ta ville"></div>
+    <div class="field"><label>Code postal</label><input id="personalPostcode" inputmode="numeric" autocomplete="off" placeholder="Code postal"></div>
+    <div class="field"><label>Numéro de téléphone</label><input id="personalPhone" type="tel" autocomplete="off" placeholder="Ton numéro"></div>
+  </div>
+  <div class="tile">
+    <h3>Public usernames</h3>
+    <div class="field"><label>Username TikTok</label><input id="personalTikTok" autocomplete="off" placeholder="@username"></div>
+    <div class="field"><label>Username Snapchat</label><input id="personalSnapchat" autocomplete="off" placeholder="username"></div>
+    <div class="notice">Ces champs servent uniquement à noter tes propres informations ou celles d'une personne qui t'a donné son accord. Ils ne lancent aucune recherche et ne permettent pas de retrouver quelqu'un.</div>
+    <button class="btn" id="clearPersonalFields">Effacer les champs</button>
+  </div>
+</div>
+<div class="notice">Confidentialité : les informations saisies restent dans cette page pendant son ouverture. Elles ne sont ni envoyées à une API, ni enregistrées automatiquement. Évite d'entrer les coordonnées privées d'une autre personne.</div>
+<button class="btn" id="searchPersonalInfo">Rechercher</button>
+<div id="personalSearchResult" class="notice" aria-live="polite">Remplis les champs que tu souhaites vérifier, puis appuie sur Rechercher.</div>
+</div></section>
+<section class="page" id="reports"><div class="panel"><h2>Reports</h2><p class="sub">Rapports de démonstration à préparer à partir de sources vérifiables.</p><div class="tile"><h3>Weekly OSINT Summary</h3><p>Résumé fictif · aucune donnée réelle collectée.</p><button class="btn" onclick="window.print()">Print / Save report</button></div></div></section>
+<section class="page" id="settings"><div class="panel"><h2>Settings</h2><p class="sub">Préférences de l'interface.</p><div class="field"><label>Nom du workspace</label><input value="SCARY INTELLIGENCE"></div><div class="field"><label>Thème</label><select><option>Dark Intelligence</option></select></div><div class="notice">Les paramètres de cette maquette ne sont pas enregistrés sur un serveur.</div></div></section>
+</div></main></div>
+<script>
+const titles={dashboard:['Dashboard Overview','Real-time intelligence gathering status and analytics'],discord:['Discord ID Lookup','Check a Discord ID and open its public profile'],profile:['Personal Information','Private local notes — not sent to a server'],investigations:['Investigations','Manage your OSINT cases and notes'],framework:['OSINT Framework','Public research tools and resources'],graph:['Maltego Graph','Visualise relationships between public entities'],spiderfoot:['SpiderFoot','Authorised checks and scan workspace'],sources:['Data Sources','Connected public intelligence sources'],reports:['Reports','Review and export your summaries'],settings:['Settings','Workspace preferences']};
+function showPage(id){document.querySelectorAll('.page').forEach(p=>p.classList.toggle('active',p.id===id));document.querySelectorAll('.nav button').forEach(b=>b.classList.toggle('active',b.dataset.page===id));document.getElementById('pageTitle').textContent=titles[id][0];document.getElementById('pageDesc').textContent=titles[id][1];}
+document.querySelectorAll('[data-page]').forEach(b=>b.addEventListener('click',()=>showPage(b.dataset.page)));
+document.querySelectorAll('[data-go]').forEach(b=>b.addEventListener('click',()=>showPage(b.dataset.go)));
+const discordInput=document.getElementById('discordId');
+const discordResult=document.getElementById('discordResult');
+const openDiscord=document.getElementById('openDiscord');
+let validDiscordId='';
+document.getElementById('checkDiscord').addEventListener('click',()=>{
+  const value=discordInput.value.replace(/\\s+/g,'').trim();
+  if(!/^\d{17,20}$/.test(value)){
+    validDiscordId='';
+    openDiscord.disabled=true;
+    discordResult.textContent='ID invalide : un identifiant Discord est généralement composé de 17 à 20 chiffres.';
+    return;
+  }
+  validDiscordId=value;
+  openDiscord.disabled=false;
+  discordResult.textContent='Format valide. Tu peux ouvrir la page de profil Discord associée à cet ID. Cela ne révèle aucune adresse IP.';
+});
+openDiscord.addEventListener('click',()=>{
+  if(validDiscordId) window.open('https://discord.com/users/'+encodeURIComponent(validDiscordId),'_blank','noopener,noreferrer');
+});
+document.getElementById('clearPersonalFields').addEventListener('click',()=>{
+  ['personalLastName','personalFirstName','personalCity','personalPostcode','personalPhone','personalTikTok','personalSnapchat'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('personalSearchResult').textContent='Les champs ont été effacés.';
+});
+document.getElementById('searchPersonalInfo').addEventListener('click',()=>{
+  const ids=['personalLastName','personalFirstName','personalCity','personalPostcode','personalPhone','personalTikTok','personalSnapchat'];
+  const filled=ids.filter(id=>document.getElementById(id).value.trim()!=='').length;
+  const result=document.getElementById('personalSearchResult');
+  if(!filled){
+    result.textContent='Ajoute au moins une information avant de lancer la vérification.';
+    return;
+  }
+  result.textContent='Vérification locale effectuée : '+filled+' champ(s) renseigné(s). Cette maquette ne lance pas de recherche sur une personne et n’envoie aucune donnée sur Internet.';
+});
+</script>
+</body></html>
